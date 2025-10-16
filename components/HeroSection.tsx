@@ -1,12 +1,14 @@
 // file: components/HeroSection.tsx
 
-import { Plus, Terminal } from "lucide-react";
-import Link from "next/link";
+import Link from 'next/link';
+import { Plus, Terminal } from 'lucide-react';
 
 export default function HeroSection() {
   return (
-    <section className="relative flex flex-col items-center justify-center w-full min-h-[calc(100vh-4rem)]">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(37,99,235,0.15),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(37,99,235,0.25),rgba(255,255,255,0))]"></div>
+  <section className="relative flex flex-col items-center justify-center w-full min-h-[calc(100vh-4rem)]">
+      {/* Efek gradasi radial di latar belakang untuk menambah kedalaman */}
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-gray-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(37,99,235,0.15),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(37,99,235,0.25),rgba(255,255,255,0))]"></div>
+      
       <div className="container mx-auto max-w-4xl text-center px-6">
         <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-gray-900 dark:text-gray-100">
           Musik. Kualitas.
@@ -17,9 +19,7 @@ export default function HeroSection() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600 dark:text-gray-400 md:text-xl">
-          Drew adalah bot musik Discord generasi baru yang dirancang untuk
-          memberikan pengalaman audio berkualitas tinggi tanpa jeda. Fokus pada
-          musik, lupakan yang lainnya.
+          Drew adalah bot musik Discord generasi baru yang dirancang untuk memberikan pengalaman audio berkualitas tinggi tanpa jeda. Fokus pada musik, lupakan yang lainnya.
         </p>
 
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

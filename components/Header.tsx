@@ -2,38 +2,33 @@
 
 "use client";
 
-import { Menu, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import ThemeToggle from "./ThemeToogle";
+import { Menu, X } from "lucide-react";
 
-// Ubah href menjadi anchor link (#) untuk navigasi satu halaman
 const navItems = [
-  { label: "Home", href: "#home" }, // Menunjuk ke bagian atas
-  { label: "Features", href: "#FeatureSection" }, // Menunjuk ke bagian atas
-  { label: "Commands", href: "#commands" }, // Menunjuk ke section dengan id="commands"
-  { label: "Contact", href: "#contact" }, // Menunjuk ke section dengan id="contact"
+  { label: "Home", href: "#home" },
+  { label: "Features", href: "#FeatureSection" },
+  { label: "Commands", href: "#commands" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
-  // Fungsi untuk menangani smooth scroll
-  const handleScroll = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    href: string
-  ) => {
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     const targetId = href.replace(/.*#/, "");
     const elem = document.getElementById(targetId);
     elem?.scrollIntoView({
       behavior: "smooth",
     });
-    setIsMenuOpen(false); // Tutup menu mobile setelah klik
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
-  // Efek untuk mendeteksi bagian mana yang sedang di-scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -43,7 +38,7 @@ export default function Header() {
           }
         });
       },
-      { rootMargin: "-30% 0px -70% 0px" } // Opsi agar deteksi lebih akurat di tengah layar
+      { rootMargin: "-30% 0px -70% 0px" }
     );
 
     navItems.forEach((item) => {
@@ -52,28 +47,25 @@ export default function Header() {
       if (elem) observer.observe(elem);
     });
 
-    return () => observer.disconnect(); // Cleanup observer
+    return () => observer.disconnect();
   }, []);
 
-  // Mencegah scroll body saat menu mobile terbuka
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
   }, [isMenuOpen]);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 dark:border-gray-800/80 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-lg">
-        <nav className="container mx-auto flex h-23 max-w-7xl items-center justify-between px-6">
-          <Link
-            href="#home"
-            onClick={(e) => handleScroll(e, "#home")}
-            className="flex items-center gap-2"
-          >
-            <span className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+      {/* Latar header diubah menjadi biru tua (bg-slate-900) */}
+      <header className="sticky top-0 z-50 w-full border-b border-slate-700 bg-slate-900/80 backdrop-blur-lg">
+        <nav className="container mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+          <Link href="#home" onClick={(e) => handleScroll(e, '#home')} className="flex items-center gap-2">
+            {/* Warna teks diubah menjadi putih agar terbaca */}
+            <span className="text-4xl font-bold tracking-tight text-white">
               Drew
             </span>
           </Link>
@@ -85,32 +77,28 @@ export default function Header() {
                 href={item.href}
                 onClick={(e) => handleScroll(e, item.href)}
                 className={`text-sm font-medium transition-colors duration-200 ${
-                  // Logika baru untuk active link
-                  "#" + activeSection === item.href
-                    ? "text-blue-500"
-                    : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  '#' + activeSection === item.href
+                    ? "text-blue-400" // Warna link aktif dibuat lebih cerah
+                    : "text-slate-300 hover:text-white" // Warna link non-aktif & hover disesuaikan
                 }`}
               >
                 {item.label}
               </a>
             ))}
           </div>
-
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex md:hidden"
-              aria-label="Toggle menu"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          
+          <div className="md:hidden">
+            {/* Warna ikon menu diubah menjadi putih */}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu" className="text-white">
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </nav>
       </header>
 
+      {/* Bagian menu mobile tidak diubah, tetap dengan latar terang */}
       {isMenuOpen && (
-        <div className="fixed inset-0 top-16 z-40 bg-gray-50/80 dark:bg-gray-950/80 backdrop-blur-lg md:hidden">
+        <div className="fixed inset-0 top-20 z-40 bg-white/80 backdrop-blur-lg md:hidden">
           <div className="mt-8 flex flex-col items-center gap-8">
             {navItems.map((item) => (
               <a
@@ -118,9 +106,9 @@ export default function Header() {
                 href={item.href}
                 onClick={(e) => handleScroll(e, item.href)}
                 className={`text-xl font-medium ${
-                  "#" + activeSection === item.href
+                  '#' + activeSection === item.href
                     ? "text-blue-500"
-                    : "text-gray-700 dark:text-gray-300"
+                    : "text-gray-700"
                 }`}
               >
                 {item.label}

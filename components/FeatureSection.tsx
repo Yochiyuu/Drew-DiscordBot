@@ -4,7 +4,8 @@ import { Bot } from "lucide-react"; // Kita hanya butuh ikon Bot sekarang
 
 export default function FeatureSection() {
   return (
-    <section className="w-full py-20 sm:py-24 lg:py-32 text-white">
+    // SESUDAH
+    <section className="w-full py-20 sm:py-24 lg:py-32 text-gray-900 dark:text-white">
       <div className="container mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 md:grid-cols-2 lg:gap-24">
         {/* Kolom Kiri: Gambar Fitur */}
         <div className="relative flex justify-center md:justify-start">
@@ -41,9 +42,6 @@ export default function FeatureSection() {
           </a>
         </div>
       </div>
-
     </section>
-    
-    
   );
 }

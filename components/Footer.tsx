@@ -8,7 +8,7 @@ import { Github, Twitter, MessageSquare } from 'lucide-react';
 // Definisikan item navigasi footer agar mudah dikelola
 const footerNavItems = [
   { label: "Home", href: "#home" },
-  { label: "Features", href: "#features" },
+  { label: "Features", href: "#FeatureSection " },
   { label: "Commands", href: "#commands" },
   { label: "Contact", href: "#contact" },
 ];
