@@ -1,33 +1,25 @@
-// file: app/layout.tsx
-
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Drew Discord Bot",
-  description: "Drew Discord Bot",
+  title: "DrewBot - Music & Moderation",
+  description: "Bot Discord terbaik karya anak bangsa.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
+        className={`${inter.className} bg-white text-slate-900 overflow-x-hidden`}
       >
-        <div className="min-h-screen flex flex-col">{children}</div>
+        {children}
       </body>
     </html>
   );
