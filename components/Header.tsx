@@ -7,6 +7,15 @@ import { useState } from "react";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Fungsi untuk scroll halus (opsional jika html { scroll-behavior: smooth } sudah ada di css)
+  const scrollToSection = (id: string) => {
+    setIsOpen(false); // Tutup menu mobile jika diklik
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
@@ -15,11 +24,12 @@ export default function Header() {
       className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
     >
       {/* Container Kapsul */}
-      <nav className="glass rounded-full px-6 py-3 flex items-center justify-between gap-8 max-w-3xl w-full">
+      <nav className="glass rounded-full px-6 py-3 flex items-center justify-between gap-8 max-w-3xl w-full bg-white/70 backdrop-blur-md border border-white/20 shadow-sm">
         {/* Logo */}
         <Link
           href="/"
           className="font-bold text-xl tracking-tight flex items-center gap-2"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           <span>
             <span className="text-indigo-600">Astons</span>
@@ -35,16 +45,16 @@ export default function Header() {
             Fitur
           </Link>
           <Link
-            href="#pricing"
+            href="#commands"
             className="hover:text-indigo-600 transition-colors"
           >
-            Premium
+            Commands
           </Link>
           <Link
-            href="/docs"
+            href="#contact"
             className="hover:text-indigo-600 transition-colors"
           >
-            Docs
+            Contact
           </Link>
         </div>
 
@@ -73,18 +83,41 @@ export default function Header() {
         </button>
       </nav>
 
-      {/* Mobile Menu Dropdown (Kalo dibuka) */}
+      {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="absolute top-20 left-4 right-4 glass rounded-2xl p-4 flex flex-col gap-4 md:hidden shadow-xl">
-          <Link href="#features" className="text-slate-600 py-2">
+        <div className="absolute top-20 left-4 right-4 glass rounded-2xl p-4 flex flex-col gap-4 md:hidden shadow-xl bg-white/90 backdrop-blur-md">
+          <Link
+            href="#features"
+            className="text-slate-600 py-2 hover:text-indigo-600"
+            onClick={() => setIsOpen(false)}
+          >
             Fitur
           </Link>
-          <Link href="/login" className="text-slate-600 py-2">
+          <Link
+            href="#commands"
+            className="text-slate-600 py-2 hover:text-indigo-600"
+            onClick={() => setIsOpen(false)}
+          >
+            Commands
+          </Link>
+          <Link
+            href="#contact"
+            className="text-slate-600 py-2 hover:text-indigo-600"
+            onClick={() => setIsOpen(false)}
+          >
+            Contact
+          </Link>
+          <Link
+            href="/login"
+            className="text-slate-600 py-2 hover:text-indigo-600"
+            onClick={() => setIsOpen(false)}
+          >
             Login
           </Link>
           <Link
             href="/invite"
             className="bg-indigo-600 text-white text-center py-3 rounded-xl font-medium"
+            onClick={() => setIsOpen(false)}
           >
             Invite Bot
           </Link>

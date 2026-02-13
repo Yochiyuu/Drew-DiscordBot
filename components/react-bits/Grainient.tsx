@@ -1,4 +1,4 @@
-// components/react-bits/Grainient.tsx
+"use client";
 import { Mesh, Program, Renderer, Triangle } from "ogl";
 import React, { useEffect, useRef } from "react";
 
