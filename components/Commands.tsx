@@ -3,7 +3,6 @@
 import { Music, Shield, Zap } from "lucide-react";
 import React, { useState } from "react";
 
-// --- Types ---
 interface Command {
   name: string;
   args?: string;
@@ -17,22 +16,21 @@ interface CommandCategory {
   commands: Command[];
 }
 
-// --- Data ---
 const commandData: CommandCategory[] = [
   {
     id: "music",
     title: "Music",
     icon: <Music className="h-4 w-4" />,
     commands: [
-      { name: "join", description: "Masuk ke voice channel." },
-      { name: "leave", description: "Keluar dari voice channel." },
+      { name: "join", description: "Joins your current voice channel." },
+      { name: "leave", description: "Disconnects from the voice channel." },
       {
         name: "play",
-        args: "<judul/link>",
-        description: "Memutar lagu dari YouTube/Spotify.",
+        args: "<title/link>",
+        description: "Streams audio from YouTube or Spotify.",
       },
-      { name: "pause", description: "Jeda lagu." },
-      { name: "resume", description: "Lanjut lagu." },
+      { name: "pause", description: "Pauses the current track." },
+      { name: "resume", description: "Resumes playback." },
     ],
   },
   {
@@ -40,10 +38,22 @@ const commandData: CommandCategory[] = [
     title: "Moderation",
     icon: <Shield className="h-4 w-4" />,
     commands: [
-      { name: "kick", args: "@user", description: "Kick user dari server." },
-      { name: "ban", args: "@user", description: "Ban user selamanya." },
-      { name: "clear", args: "<jumlah>", description: "Hapus chat massal." },
-      { name: "mute", args: "@user", description: "Bisukan member." },
+      {
+        name: "kick",
+        args: "@user",
+        description: "Removes a user from the server.",
+      },
+      { name: "ban", args: "@user", description: "Permanently bans a user." },
+      {
+        name: "clear",
+        args: "<amount>",
+        description: "Bulk deletes messages.",
+      },
+      {
+        name: "mute",
+        args: "@user",
+        description: "Temporarily mutes a member.",
+      },
     ],
   },
   {
@@ -51,9 +61,13 @@ const commandData: CommandCategory[] = [
     title: "Utility",
     icon: <Zap className="h-4 w-4" />,
     commands: [
-      { name: "ping", description: "Cek latensi bot." },
-      { name: "info", description: "Info server statistik." },
-      { name: "help", args: "[cmd]", description: "Bantuan detail." },
+      { name: "ping", description: "Checks bot latency and response time." },
+      { name: "info", description: "Displays server statistics." },
+      {
+        name: "help",
+        args: "[cmd]",
+        description: "Shows detailed command usage.",
+      },
     ],
   },
 ];
@@ -63,23 +77,20 @@ export default function CommandsPage() {
   const activeCategory = commandData.find((c) => c.id === activeTab);
 
   return (
-    // UPDATED: Background transparan agar wallpaper asli terlihat
     <div className="w-full py-20 relative">
       <div className="container mx-auto max-w-4xl px-6">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-md mb-3">
             Command List
           </h1>
           <p className="text-slate-200/80 text-lg">
-            Gunakan prefix{" "}
+            Use prefix{" "}
             <span className="bg-white/20 px-2 py-0.5 rounded font-mono font-bold text-white backdrop-blur-sm">
               +
             </span>
           </p>
         </div>
 
-        {/* Navigation Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-10">
           {commandData.map((cat) => (
             <button
@@ -97,12 +108,10 @@ export default function CommandsPage() {
           ))}
         </div>
 
-        {/* Content Area (Cards) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {activeCategory?.commands.map((cmd, idx) => (
             <div
               key={idx}
-              // Card Style: Background gelap transparan (Glass) + Blur
               className="group flex flex-col p-5 rounded-xl border border-white/10 bg-black/40 backdrop-blur-md hover:bg-black/60 hover:border-indigo-500/50 hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-2">

@@ -8,47 +8,45 @@ export default function FeatureSection() {
     {
       icon: <Music className="w-6 h-6" />,
       title: "High-Res Audio",
-      desc: "Nikmati musik tanpa kompresi kasar. Support FLAC & 320kbps untuk telinga audiophile.",
+      desc: "Experience uncompressed audio. Supports FLAC & 320kbps for true audiophiles.",
     },
     {
       icon: <ShieldCheck className="w-6 h-6" />,
       title: "Auto Moderation",
-      desc: "Jaga server tetap bersih dari spam link, raid, dan kata-kata kasar secara otomatis.",
+      desc: "Keep your server clean from spam links, raids, and profanity automatically.",
     },
     {
       icon: <Zap className="w-6 h-6" />,
       title: "Zero Latency",
-      desc: "Respon bot instan di bawah 20ms. Gak pake loading lama, perintah langsung jalan.",
+      desc: "Instant response time under 20ms. Zero lag, immediate command execution.",
     },
     {
       icon: <Globe className="w-6 h-6" />,
       title: "Web Dashboard",
-      desc: "Kontrol penuh bot lewat browser. Atur playlist dan volume tanpa hafal command ribet.",
+      desc: "Full control via browser. Manage playlists and volume without complex commands.",
     },
     {
       icon: <BarChart3 className="w-6 h-6" />,
       title: "Server Analytics",
-      desc: "Lihat statistik member, aktivitas chat, dan jam paling ramai dalam grafik visual.",
+      desc: "Visualize member statistics, chat activity, and peak hours with intuitive graphs.",
     },
     {
       icon: <Radio className="w-6 h-6" />,
       title: "24/7 Radio",
-      desc: "Putar lofi hip hop atau radio favorit nonstop 24 jam tanpa putus meski tidak ada orang.",
+      desc: "Stream Lofi Hip Hop or your favorite stations non-stop, 24/7, even when idle.",
     },
   ];
 
-  // Variabel animasi container
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1, // Jeda antar card muncul
+        staggerChildren: 0.1,
       },
     },
   };
 
-  // Variabel animasi item card
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -56,11 +54,9 @@ export default function FeatureSection() {
 
   return (
     <section id="features" className="py-32 relative overflow-hidden">
-      {/* Background Glow Hiasan */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-900/20 rounded-full blur-[120px] -z-10" />
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Header Tengah */}
         <div className="text-center max-w-3xl mx-auto mb-20">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -78,9 +74,9 @@ export default function FeatureSection() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-extrabold text-white mb-6 tracking-tight leading-tight"
           >
-            Semua yang kamu butuhin, <br />
+            Everything You Need, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
-              Dalam Satu Bot.
+              In One Bot.
             </span>
           </motion.h2>
 
@@ -91,12 +87,12 @@ export default function FeatureSection() {
             transition={{ delay: 0.2 }}
             className="text-lg text-slate-400 leading-relaxed"
           >
-            Dibangun dengan teknologi terbaru untuk memastikan server Discord
-            kamu selalu aktif, aman, dan menghibur tanpa kompromi performa.
+            Built with cutting-edge technology to ensure your Discord server
+            stays active, secure, and entertaining without compromising
+            performance.
           </motion.p>
         </div>
 
-        {/* Grid Card */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -110,15 +106,12 @@ export default function FeatureSection() {
               variants={itemVariants}
               className="group relative p-8 rounded-3xl border border-white/5 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
             >
-              {/* Efek Gradient Hover di Border */}
               <div className="absolute inset-0 border-2 border-transparent group-hover:border-indigo-500/30 rounded-3xl transition-colors duration-300 pointer-events-none" />
 
-              {/* Icon */}
               <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-lg shadow-black/20 group-hover:shadow-indigo-500/40">
                 {item.icon}
               </div>
 
-              {/* Text */}
               <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors">
                 {item.title}
               </h3>

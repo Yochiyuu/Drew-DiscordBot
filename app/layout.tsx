@@ -5,8 +5,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DrewBot - Music & Moderation",
-  description: "Bot Discord terbaik karya anak bangsa.",
+  title: "Astons",
+  description:
+    "The ultimate Discord bot for high-fidelity music and seamless moderation.",
 };
 
 export default function RootLayout({

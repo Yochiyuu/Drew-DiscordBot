@@ -13,7 +13,6 @@ import {
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-// --- DATA LAGU ---
 const tracks = [
   {
     title: "Passionfruit",
@@ -35,7 +34,6 @@ const tracks = [
   },
 ];
 
-// Helper Format Waktu (MM:SS)
 const formatTime = (time: number) => {
   if (isNaN(time)) return "0:00";
   const minutes = Math.floor(time / 60);
@@ -43,14 +41,13 @@ const formatTime = (time: number) => {
   return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };
 
-// Komponen Visualizer (Warna Default Indigo)
 const AudioVisualizer = ({ isPlaying }: { isPlaying: boolean }) => {
   return (
     <div className="flex items-center justify-center gap-1.5 h-6">
       {[...Array(4)].map((_, i) => (
         <motion.div
           key={i}
-          className="w-1 rounded-full bg-indigo-500" // Warna statis
+          className="w-1 rounded-full bg-indigo-500"
           animate={{
             height: isPlaying ? [6, 16, 6] : 4,
             opacity: isPlaying ? 1 : 0.3,
@@ -77,7 +74,6 @@ export default function MusicPlayerCard() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentTrack = tracks[currentTrackIndex];
 
-  // --- 1. LOGIKA PLAYBACK SAAT TRACK BERUBAH ---
   useEffect(() => {
     const playAudio = async () => {
       if (audioRef.current) {
@@ -96,29 +92,26 @@ export default function MusicPlayerCard() {
     }
   }, [currentTrackIndex]);
 
-  // --- 2. LOGIKA AUTOPLAY & USER INTERACTION ---
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Coba autoplay awal
     const attemptInitialPlay = async () => {
       try {
         await audio.play();
         setIsPlaying(true);
       } catch (e) {
-        console.log("Autoplay awal diblokir, menunggu klik user.");
+        console.log("Initial autoplay blocked, waiting for user interaction.");
       }
     };
     attemptInitialPlay();
 
-    // Fallback: Play saat interaksi pertama
     const handleUserInteraction = () => {
       if (audio.paused && !isPlaying) {
         audio
           .play()
           .then(() => setIsPlaying(true))
-          .catch((e) => console.error("Gagal play:", e));
+          .catch((e) => console.error("Play failed:", e));
       }
       document.removeEventListener("click", handleUserInteraction);
       document.removeEventListener("keydown", handleUserInteraction);
@@ -136,7 +129,6 @@ export default function MusicPlayerCard() {
     };
   }, []);
 
-  // Sync State Play/Pause
   useEffect(() => {
     if (!audioRef.current) return;
     if (isPlaying && audioRef.current.paused) {
@@ -146,7 +138,6 @@ export default function MusicPlayerCard() {
     }
   }, [isPlaying]);
 
-  // Handle Update Waktu
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       const current = audioRef.current.currentTime;
@@ -193,10 +184,9 @@ export default function MusicPlayerCard() {
       transition={{ duration: 0.8 }}
       className="relative w-full max-w-sm p-7 rounded-[2.5rem] backdrop-blur-3xl z-10 flex flex-col gap-5 border border-white/20"
       style={{
-        // Background Default: Putih transparan + Gradient halus Indigo
         background:
           "linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)", // Shadow hitam standar
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)",
       }}
     >
       <audio
@@ -207,7 +197,6 @@ export default function MusicPlayerCard() {
         crossOrigin="anonymous"
       />
 
-      {/* --- HEADER --- */}
       <div className="flex justify-between items-center px-2">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-white/10 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
           <AudioVisualizer isPlaying={isPlaying} />
@@ -218,7 +207,6 @@ export default function MusicPlayerCard() {
         </button>
       </div>
 
-      {/* --- ALBUM ART --- */}
       <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden shadow-2xl group border border-white/10">
         <AnimatePresence mode="wait">
           <motion.div
@@ -236,12 +224,10 @@ export default function MusicPlayerCard() {
               className="object-cover"
               priority
             />
-            {/* Overlay gradient hitam halus */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
           </motion.div>
         </AnimatePresence>
 
-        {/* Play Overlay */}
         <div
           onClick={() => setIsPlaying(!isPlaying)}
           className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
@@ -256,7 +242,6 @@ export default function MusicPlayerCard() {
         </div>
       </div>
 
-      {/* --- INFO LAGU --- */}
       <div className="px-1">
         <div className="flex justify-between items-end mb-4">
           <div className="min-w-0 pr-4">
@@ -264,7 +249,6 @@ export default function MusicPlayerCard() {
               key={currentTrack.title}
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              // Warna Teks Judul: Putih
               className="text-2xl font-black text-white leading-tight truncate drop-shadow-md"
             >
               {currentTrack.title}
@@ -274,7 +258,6 @@ export default function MusicPlayerCard() {
               initial={{ y: 5, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              // Warna Teks Artis: Slate Terang
               className="text-sm font-bold truncate text-slate-300"
             >
               {currentTrack.artist}
@@ -285,7 +268,6 @@ export default function MusicPlayerCard() {
           </button>
         </div>
 
-        {/* --- PROGRESS BAR --- */}
         <div
           className="mb-6 group cursor-pointer"
           onClick={handleProgressClick}
@@ -295,7 +277,6 @@ export default function MusicPlayerCard() {
               className="absolute top-0 left-0 h-full rounded-full"
               style={{
                 width: `${progress}%`,
-                // Warna Progress Bar: Gradient Indigo-Violet Default
                 background: "linear-gradient(to right, #6366f1, #8b5cf6)",
                 boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)",
               }}
@@ -312,7 +293,6 @@ export default function MusicPlayerCard() {
           </div>
         </div>
 
-        {/* --- CONTROLS --- */}
         <div className="flex items-center justify-between">
           <button className="text-slate-400 hover:text-white transition-colors">
             <Volume2 className="w-5 h-5" />

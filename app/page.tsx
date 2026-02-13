@@ -8,25 +8,19 @@ import HeroSection from "@/components/HeroSection/HeroSection";
 export default function Home() {
   return (
     <main className="relative w-full min-h-screen overflow-hidden bg-[#0a0a0a]">
-      {/* Layer Depan: Konten Utama */}
       <div className="relative z-10">
         <Header />
 
-        {/* Hero Section (Paling atas, tidak butuh ID khusus) */}
         <HeroSection />
 
-        {/* Features Section */}
-        {/* scroll-mt-32 memberi jarak agar tidak tertutup header saat discroll */}
         <section id="features" className="scroll-mt-32">
           <FeatureSection />
         </section>
 
-        {/* Commands Section */}
         <section id="commands" className="scroll-mt-32">
           <CommandsPage />
         </section>
 
-        {/* Contact Section */}
         <section id="contact" className="scroll-mt-32">
           <ContactPage />
         </section>
