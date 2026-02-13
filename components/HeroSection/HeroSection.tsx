@@ -10,32 +10,34 @@ export default function HeroSection() {
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
           {/* --- KIRI: TEKS --- */}
           <div className="w-full lg:w-1/2 text-left relative">
-            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1] drop-shadow-sm">
+            {/* UPDATED: Warna teks jadi putih agar terlihat di background gelap */}
+            <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1] drop-shadow-sm">
               Dengerin Musik <br />
-              {/* UPDATED: Gradient Text menyesuaikan tema baru (#723b3b) */}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-red-600">
+              {/* UPDATED: Gradient diganti ke warna terang (Indigo - Cyan) agar menyala di gelap */}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
                 Tanpa Iklan.
               </span>
             </h1>
 
-            <p className="text-lg text-slate-700 font-medium mb-8 max-w-lg leading-relaxed">
+            {/* UPDATED: Warna teks deskripsi jadi abu-abu terang */}
+            <p className="text-lg text-slate-400 font-medium mb-8 max-w-lg leading-relaxed">
               Stream lagu favorit dari Spotify & YouTube langsung di Discord.
               Audio jernih, bass boost, dan 100% gratis.
             </p>
 
             <div className="flex flex-wrap gap-4">
-              {/* Tombol Primary */}
+              {/* Tombol Primary: Hitam -> Indigo (Biru) supaya tidak mati warna dengan background */}
               <Link
                 href="/invite"
-                className="px-8 py-4 bg-slate-900 text-white rounded-full font-bold hover:scale-105 transition-transform shadow-xl shadow-slate-900/20 flex items-center gap-2 hover:bg-slate-800"
+                className="px-8 py-4 bg-indigo-600 text-white rounded-full font-bold hover:scale-105 transition-transform shadow-xl shadow-indigo-500/20 flex items-center gap-2 hover:bg-indigo-500"
               >
                 Add to Discord <ArrowRight className="w-4 h-4" />
               </Link>
 
-              {/* Tombol Secondary (UPDATED Hover Color) */}
+              {/* Tombol Secondary: Glass effect disesuaikan untuk dark mode */}
               <Link
                 href="#commands"
-                className="px-8 py-4 bg-white/50 backdrop-blur-md border border-slate-200 text-slate-700 rounded-full font-bold hover:bg-white hover:text-[#723b3b] hover:border-[#723b3b]/30 transition-all shadow-lg shadow-slate-200/50 flex items-center gap-2"
+                className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/10 text-slate-200 rounded-full font-bold hover:bg-white/20 hover:text-white transition-all shadow-lg flex items-center gap-2"
               >
                 Commands <Terminal className="w-4 h-4" />
               </Link>

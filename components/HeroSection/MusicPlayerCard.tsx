@@ -5,95 +5,221 @@ import {
   FastForward,
   Heart,
   MoreHorizontal,
-  Music,
   Pause,
   Play,
   Rewind,
   Volume2,
 } from "lucide-react";
-import Image from "next/image"; // Pakai next/image biar lebih optimal
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 
-// Data Lagu (Hardcoded Image)
-// Pastikan gambar-gambar ini ada di folder public/images/ kamu
+// --- DATA LAGU ---
 const tracks = [
   {
-    title: "Study Lo-Fi Beats",
-    artist: "Chill Hop",
-    duration: "3:45",
-    image: "/images/drew.png", // Menggunakan gambar maskot kamu
-    color: "from-[#723b3b] to-[#645464]",
+    title: "Passionfruit",
+    artist: "Drake",
+    image: "/images/Passionfruit.jpeg",
+    src: "/audio/Passionfruit.mp3",
   },
   {
-    title: "Midnight Drive",
-    artist: "Synthwave Mix",
-    duration: "4:20",
-    image: "/images/discordmusic.png", // Menggunakan aset lain yang ada
-    color: "from-indigo-600 to-purple-800",
+    title: "Who Knows",
+    artist: "Daniel Caesar",
+    image: "/images/WhoKnows.png",
+    src: "/audio/WhoKnows.mp3",
   },
   {
-    title: "Coffee Shop Vibes",
-    artist: "Jazz Hop",
-    duration: "2:55",
-    image: "/images/drew.png", // Bisa diulang atau ganti gambar lain
-    color: "from-amber-700 to-orange-900",
-  },
-  {
-    title: "Rainy Mood",
-    artist: "Nature Sounds",
-    duration: "5:00",
-    image: "/images/discordmanage.png", // Menggunakan aset lain
-    color: "from-slate-700 to-slate-900",
+    title: "Love Me Not (feat. Rex Orange County)",
+    artist: "Ravyn Lenae, Rex Orange County",
+    image: "/images/LoveMeNot.jpeg",
+    src: "/audio/LoveMeNot.mp3",
   },
 ];
+
+// Helper Format Waktu (MM:SS)
+const formatTime = (time: number) => {
+  if (isNaN(time)) return "0:00";
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+};
+
+// Komponen Visualizer (Warna Default Indigo)
+const AudioVisualizer = ({ isPlaying }: { isPlaying: boolean }) => {
+  return (
+    <div className="flex items-center justify-center gap-1.5 h-6">
+      {[...Array(4)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="w-1 rounded-full bg-indigo-500" // Warna statis
+          animate={{
+            height: isPlaying ? [6, 16, 6] : 4,
+            opacity: isPlaying ? 1 : 0.3,
+          }}
+          transition={{
+            duration: 0.5,
+            repeat: Infinity,
+            delay: i * 0.1,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default function MusicPlayerCard() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
-  // Fungsi Next Track
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentTrack = tracks[currentTrackIndex];
+
+  // --- 1. LOGIKA PLAYBACK SAAT TRACK BERUBAH ---
+  useEffect(() => {
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          audioRef.current.currentTime = 0;
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (error) {
+          console.log("Playback interrupted:", error);
+        }
+      }
+    };
+
+    if (isPlaying) {
+      playAudio();
+    }
+  }, [currentTrackIndex]);
+
+  // --- 2. LOGIKA AUTOPLAY & USER INTERACTION ---
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Coba autoplay awal
+    const attemptInitialPlay = async () => {
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch (e) {
+        console.log("Autoplay awal diblokir, menunggu klik user.");
+      }
+    };
+    attemptInitialPlay();
+
+    // Fallback: Play saat interaksi pertama
+    const handleUserInteraction = () => {
+      if (audio.paused && !isPlaying) {
+        audio
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch((e) => console.error("Gagal play:", e));
+      }
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("keydown", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+    };
+
+    document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("keydown", handleUserInteraction);
+    document.addEventListener("touchstart", handleUserInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("keydown", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+    };
+  }, []);
+
+  // Sync State Play/Pause
+  useEffect(() => {
+    if (!audioRef.current) return;
+    if (isPlaying && audioRef.current.paused) {
+      audioRef.current.play().catch(() => setIsPlaying(false));
+    } else if (!isPlaying && !audioRef.current.paused) {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
+
+  // Handle Update Waktu
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration;
+      setCurrentTime(current);
+      setDuration(total);
+      setProgress((current / total) * 100);
+      if (current >= total) handleNext();
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (audioRef.current) {
+      const progressBar = e.currentTarget;
+      const rect = progressBar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const newTime = (clickX / rect.width) * audioRef.current.duration;
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+      setProgress((newTime / audioRef.current.duration) * 100);
+    }
+  };
+
   const handleNext = () => {
     setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
     setIsPlaying(true);
-    setProgress(0);
   };
 
-  // Fungsi Prev Track
   const handlePrev = () => {
     setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
     setIsPlaying(true);
-    setProgress(0);
   };
-
-  // Simulasi Progress Bar
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            handleNext();
-            return 0;
-          }
-          return prev + 0.5;
-        });
-      }, 100);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTrackIndex]);
-
-  const currentTrack = tracks[currentTrackIndex];
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="relative w-full max-w-sm bg-white/60 backdrop-blur-2xl p-8 rounded-[3rem] shadow-2xl shadow-slate-900/10 border border-white/40 z-10 flex flex-col gap-6"
+      className="relative w-full max-w-sm p-7 rounded-[2.5rem] backdrop-blur-3xl z-10 flex flex-col gap-5 border border-white/20"
+      style={{
+        // Background Default: Putih transparan + Gradient halus Indigo
+        background:
+          "linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.3)", // Shadow hitam standar
+      }}
     >
-      {/* --- ALBUM ART (STATIC DARI ASSETS) --- */}
-      <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden shadow-2xl shadow-slate-900/20 group">
+      <audio
+        ref={audioRef}
+        src={currentTrack.src}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        crossOrigin="anonymous"
+      />
+
+      {/* --- HEADER --- */}
+      <div className="flex justify-between items-center px-2">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-white/10 px-3 py-1 rounded-full border border-white/10 backdrop-blur-md">
+          <AudioVisualizer isPlaying={isPlaying} />
+          <span>NOW PLAYING</span>
+        </div>
+        <button className="text-slate-400 hover:text-white transition-colors">
+          <MoreHorizontal className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* --- ALBUM ART --- */}
+      <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden shadow-2xl group border border-white/10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentTrackIndex}
@@ -103,52 +229,43 @@ export default function MusicPlayerCard() {
             transition={{ duration: 0.4 }}
             className="absolute inset-0 w-full h-full relative"
           >
-            {/* Gambar Utama */}
-            {currentTrack.image ? (
-              <Image
-                src={currentTrack.image}
-                alt={currentTrack.title}
-                fill
-                className="object-cover"
-                priority // Load prioritas biar ga kedip
-              />
-            ) : (
-              // Fallback kalau gambar ga ada/error (pake gradient)
-              <div
-                className={`w-full h-full bg-gradient-to-br ${currentTrack.color} flex items-center justify-center`}
-              >
-                <Music className="w-24 h-24 text-white/30" />
-              </div>
-            )}
-
-            {/* Overlay Gradient Tipis biar estetik */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-white/10 opacity-60" />
+            <Image
+              src={currentTrack.image}
+              alt={currentTrack.title}
+              fill
+              className="object-cover"
+              priority
+            />
+            {/* Overlay gradient hitam halus */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
           </motion.div>
         </AnimatePresence>
 
-        {/* Tombol Play Overlay (Hanya visual saat hover) */}
+        {/* Play Overlay */}
         <div
-          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 backdrop-blur-[2px] cursor-pointer"
           onClick={() => setIsPlaying(!isPlaying)}
+          className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
         >
-          {isPlaying ? (
-            <Pause fill="white" className="w-12 h-12 text-white" />
-          ) : (
-            <Play fill="white" className="w-12 h-12 text-white" />
-          )}
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 shadow-xl">
+            {isPlaying ? (
+              <Pause fill="white" />
+            ) : (
+              <Play fill="white" className="ml-1" />
+            )}
+          </div>
         </div>
       </div>
 
-      {/* --- CONTROLS & INFO --- */}
-      <div className="flex flex-col gap-2">
-        {/* Title & Artist */}
-        <div className="flex justify-between items-start mb-2">
+      {/* --- INFO LAGU --- */}
+      <div className="px-1">
+        <div className="flex justify-between items-end mb-4">
           <div className="min-w-0 pr-4">
             <motion.h2
               key={currentTrack.title}
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="text-2xl font-black text-slate-900 leading-tight truncate"
+              // Warna Teks Judul: Putih
+              className="text-2xl font-black text-white leading-tight truncate drop-shadow-md"
             >
               {currentTrack.title}
             </motion.h2>
@@ -157,76 +274,78 @@ export default function MusicPlayerCard() {
               initial={{ y: 5, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="text-base text-slate-500 font-medium truncate"
+              // Warna Teks Artis: Slate Terang
+              className="text-sm font-bold truncate text-slate-300"
             >
               {currentTrack.artist}
             </motion.p>
           </div>
-          <button className="text-slate-400 hover:text-rose-500 transition-colors p-2 hover:bg-rose-50 rounded-full shrink-0">
+          <button className="text-slate-400 hover:text-rose-500 transition-colors pb-1 hover:scale-110 active:scale-95">
             <Heart className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Progress Bar */}
+        {/* --- PROGRESS BAR --- */}
         <div
-          className="mb-4 group cursor-pointer"
-          onClick={() => setProgress(Math.random() * 100)}
+          className="mb-6 group cursor-pointer"
+          onClick={handleProgressClick}
         >
-          <div className="w-full h-1.5 bg-slate-200/60 rounded-full mb-2 relative overflow-hidden">
+          <div className="w-full h-2 bg-white/10 rounded-full mb-2 relative overflow-hidden">
             <motion.div
-              className="absolute top-0 left-0 h-full bg-slate-900 rounded-full"
-              style={{ width: `${progress}%` }}
+              className="absolute top-0 left-0 h-full rounded-full"
+              style={{
+                width: `${progress}%`,
+                // Warna Progress Bar: Gradient Indigo-Violet Default
+                background: "linear-gradient(to right, #6366f1, #8b5cf6)",
+                boxShadow: "0 0 15px rgba(99, 102, 241, 0.5)",
+              }}
               layoutId="progressBar"
+              transition={{ type: "tween", ease: "linear", duration: 0.1 }}
             />
           </div>
-          <div className="flex justify-between text-xs font-bold text-slate-400 font-mono">
-            <span>
-              {Math.floor(((progress / 100) * 240) / 60)}:
-              {String(Math.floor(((progress / 100) * 240) % 60)).padStart(
-                2,
-                "0",
-              )}
+
+          <div className="flex justify-between items-center text-[10px] font-bold tracking-widest text-slate-400 font-mono">
+            <span>{formatTime(currentTime)}</span>
+            <span className="bg-white/10 px-2 py-0.5 rounded-md text-slate-300">
+              {formatTime(duration)}
             </span>
-            <span>{currentTrack.duration}</span>
           </div>
         </div>
 
-        {/* Control Buttons */}
+        {/* --- CONTROLS --- */}
         <div className="flex items-center justify-between">
-          <button className="text-slate-400 hover:text-slate-600 transition-colors">
+          <button className="text-slate-400 hover:text-white transition-colors">
             <Volume2 className="w-5 h-5" />
           </button>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             <button
               onClick={handlePrev}
-              className="text-slate-800 hover:text-indigo-600 transition-colors hover:scale-110 active:scale-95"
+              className="text-slate-300 hover:text-white hover:scale-110 transition-all"
             >
-              <Rewind fill="currentColor" className="w-7 h-7" />
+              <Rewind fill="currentColor" className="w-6 h-6" />
             </button>
 
             <button
               onClick={() => setIsPlaying(!isPlaying)}
-              className="w-16 h-16 bg-slate-900 text-white rounded-full flex items-center justify-center shadow-xl hover:scale-105 hover:bg-slate-800 transition-all active:scale-95"
+              className="w-14 h-14 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all active:scale-95 bg-indigo-600 hover:bg-indigo-500 shadow-indigo-500/30"
             >
               {isPlaying ? (
-                <Pause fill="currentColor" className="w-6 h-6" />
+                <Pause fill="currentColor" className="w-5 h-5" />
               ) : (
-                <Play fill="currentColor" className="w-6 h-6 ml-1" />
+                <Play fill="currentColor" className="w-5 h-5 ml-1" />
               )}
             </button>
 
             <button
               onClick={handleNext}
-              className="text-slate-800 hover:text-indigo-600 transition-colors hover:scale-110 active:scale-95"
+              className="text-slate-300 hover:text-white hover:scale-110 transition-all"
             >
-              <FastForward fill="currentColor" className="w-7 h-7" />
+              <FastForward fill="currentColor" className="w-6 h-6" />
             </button>
           </div>
 
-          <button className="text-slate-400 hover:text-slate-900 transition-colors">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
+          <div className="w-5" />
         </div>
       </div>
     </motion.div>

@@ -1,145 +1,124 @@
 "use client";
-import { HelpCircle, Music, Shield } from "lucide-react";
-import React from "react";
 
+import { Music, Shield, Zap } from "lucide-react";
+import React, { useState } from "react";
+
+// --- Types ---
 interface Command {
   name: string;
-  args: string;
+  args?: string;
   description: string;
 }
 
 interface CommandCategory {
+  id: string;
   title: string;
   icon: React.ReactNode;
   commands: Command[];
 }
 
+// --- Data ---
 const commandData: CommandCategory[] = [
   {
-    title: "Music Commands",
-    icon: <Music className="h-6 w-6" />,
+    id: "music",
+    title: "Music",
+    icon: <Music className="h-4 w-4" />,
     commands: [
+      { name: "join", description: "Masuk ke voice channel." },
+      { name: "leave", description: "Keluar dari voice channel." },
       {
-        name: "join",
-        args: "",
-        description: "Bot masuk ke voice channel kamu.",
+        name: "play",
+        args: "<judul/link>",
+        description: "Memutar lagu dari YouTube/Spotify.",
       },
-      {
-        name: "leave",
-        args: "",
-        description: "Bot keluar dari voice channel.",
-      },
-      {
-        name: "p",
-        args: "<judul / link>",
-        description: "Memutar lagu dari YouTube.",
-      },
-      {
-        name: "pause",
-        args: "",
-        description: "Menjeda lagu yang sedang diputar.",
-      },
-      {
-        name: "resume",
-        args: "",
-        description: "Melanjutkan lagu yang dijeda.",
-      },
-      { name: "stop", args: "", description: "Menghentikan lagu saat ini." },
-      {
-        name: "loop",
-        args: "",
-        description: "Mengaktifkan / menonaktifkan loop lagu.",
-      },
+      { name: "pause", description: "Jeda lagu." },
+      { name: "resume", description: "Lanjut lagu." },
     ],
   },
   {
-    title: "Admin Commands",
-    icon: <Shield className="h-6 w-6" />,
+    id: "admin",
+    title: "Moderation",
+    icon: <Shield className="h-4 w-4" />,
     commands: [
-      {
-        name: "kick",
-        args: "@user [alasan]",
-        description: "Kick member dari server.",
-      },
-      {
-        name: "ban",
-        args: "@user [alasan]",
-        description: "Ban member dari server.",
-      },
-      {
-        name: "unban",
-        args: "nama#0000",
-        description: "Unban member yang sudah di-ban.",
-      },
+      { name: "kick", args: "@user", description: "Kick user dari server." },
+      { name: "ban", args: "@user", description: "Ban user selamanya." },
+      { name: "clear", args: "<jumlah>", description: "Hapus chat massal." },
+      { name: "mute", args: "@user", description: "Bisukan member." },
     ],
   },
   {
-    title: "Utility Commands",
-    icon: <HelpCircle className="h-6 w-6" />,
+    id: "utility",
+    title: "Utility",
+    icon: <Zap className="h-4 w-4" />,
     commands: [
-      {
-        name: "message",
-        args: "@user",
-        description: "Kirim pesan private ke user.",
-      },
-      {
-        name: "help",
-        args: "",
-        description: "Menampilkan daftar perintah ini.",
-      },
+      { name: "ping", description: "Cek latensi bot." },
+      { name: "info", description: "Info server statistik." },
+      { name: "help", args: "[cmd]", description: "Bantuan detail." },
     ],
   },
 ];
 
-const CommandCard = ({ name, args, description }: Command) => (
-  // Update: Background transparan (white/50) + backdrop blur
-  <div className="group rounded-xl border border-slate-200 bg-white/50 backdrop-blur-sm p-5 transition-all duration-300 hover:border-indigo-300 hover:bg-white/80 shadow-sm hover:shadow-md">
-    <div className="font-mono text-base tracking-tight">
-      <span className="text-indigo-400 font-bold">+</span>
-      <span className="text-slate-900 group-hover:text-indigo-600 font-bold">
-        {name}
-      </span>
-      {args && <span className="text-slate-500 text-sm"> {args}</span>}
-    </div>
-    <p className="mt-2 text-sm text-slate-600">{description}</p>
-  </div>
-);
-
 export default function CommandsPage() {
+  const [activeTab, setActiveTab] = useState("music");
+  const activeCategory = commandData.find((c) => c.id === activeTab);
+
   return (
-    // Update: Hapus background solid, biarkan transparan
-    <div className="w-full py-16 md:py-24 relative overflow-hidden">
-      <div className="container mx-auto max-w-5xl px-6 relative z-20">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl text-slate-900">
-            Daftar Perintah Bot
+    // UPDATED: Background transparan agar wallpaper asli terlihat
+    <div className="w-full py-20 relative">
+      <div className="container mx-auto max-w-4xl px-6">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-white drop-shadow-md mb-3">
+            Command List
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+          <p className="text-slate-200/80 text-lg">
             Gunakan prefix{" "}
-            <code className="rounded-md bg-indigo-100 px-2 py-1 font-mono text-base text-indigo-700">
+            <span className="bg-white/20 px-2 py-0.5 rounded font-mono font-bold text-white backdrop-blur-sm">
               +
-            </code>{" "}
-            sebelum setiap perintah.
+            </span>
           </p>
         </div>
 
-        <div className="mt-16 space-y-12">
-          {commandData.map((category) => (
-            <section key={category.title}>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-indigo-600 p-2 bg-indigo-50 rounded-lg backdrop-blur-sm">
-                  {category.icon}
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          {commandData.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveTab(cat.id)}
+              className={`flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-md border ${
+                activeTab === cat.id
+                  ? "bg-indigo-600/90 border-indigo-500 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+                  : "bg-black/40 border-white/10 text-slate-300 hover:bg-black/60 hover:text-white"
+              }`}
+            >
+              {cat.icon}
+              {cat.title}
+            </button>
+          ))}
+        </div>
+
+        {/* Content Area (Cards) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {activeCategory?.commands.map((cmd, idx) => (
+            <div
+              key={idx}
+              // Card Style: Background gelap transparan (Glass) + Blur
+              className="group flex flex-col p-5 rounded-xl border border-white/10 bg-black/40 backdrop-blur-md hover:bg-black/60 hover:border-indigo-500/50 hover:shadow-lg transition-all duration-200"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-lg font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                  {cmd.name}
                 </span>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  {category.title}
-                </h2>
+                {cmd.args && (
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 bg-white/5 px-2 py-1 rounded border border-white/5">
+                    {cmd.args}
+                  </span>
+                )}
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {category.commands.map((cmd) => (
-                  <CommandCard key={cmd.name} {...cmd} />
-                ))}
-              </div>
-            </section>
+              <p className="text-sm text-slate-300/90 leading-relaxed">
+                {cmd.description}
+              </p>
+            </div>
           ))}
         </div>
       </div>

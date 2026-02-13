@@ -1,4 +1,5 @@
 "use client";
+
 import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
@@ -7,14 +8,18 @@ import { useState } from "react";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Fungsi untuk scroll halus (opsional jika html { scroll-behavior: smooth } sudah ada di css)
-  const scrollToSection = (id: string) => {
-    setIsOpen(false); // Tutup menu mobile jika diklik
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  // Fungsi khusus untuk Logo agar scroll ke paling atas
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsOpen(false);
   };
+
+  // List menu agar kodingan lebih rapi & tidak berulang
+  const navLinks = [
+    { name: "Features", href: "/#features" },
+    { name: "Commands", href: "/#commands" },
+    { name: "Contact", href: "/#contact" },
+  ];
 
   return (
     <motion.header
@@ -24,104 +29,90 @@ export default function Header() {
       className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4"
     >
       {/* Container Kapsul */}
-      <nav className="glass rounded-full px-6 py-3 flex items-center justify-between gap-8 max-w-3xl w-full bg-white/70 backdrop-blur-md border border-white/20 shadow-sm">
+      <nav className="rounded-full px-6 py-3 flex items-center justify-between gap-8 max-w-3xl w-full bg-[#0f172a]/80 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/20">
         {/* Logo */}
         <Link
           href="/"
-          className="font-bold text-xl tracking-tight flex items-center gap-2"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="font-bold text-xl tracking-tight flex items-center gap-2 text-white"
+          onClick={scrollToTop}
         >
-          <span>
-            <span className="text-indigo-600">Astons</span>
-          </span>
+          <span className="text-indigo-500">Astons</span>
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-          <Link
-            href="#features"
-            className="hover:text-indigo-600 transition-colors"
-          >
-            Fitur
-          </Link>
-          <Link
-            href="#commands"
-            className="hover:text-indigo-600 transition-colors"
-          >
-            Commands
-          </Link>
-          <Link
-            href="#contact"
-            className="hover:text-indigo-600 transition-colors"
-          >
-            Contact
-          </Link>
+        <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="hover:text-white transition-colors"
+            >
+              {link.name}
+            </Link>
+          ))}
         </div>
 
         {/* CTA Button */}
         <div className="hidden md:flex items-center gap-3">
           <Link
             href="/login"
-            className="text-sm font-medium text-slate-600 hover:text-indigo-600"
+            className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
           >
             Login
           </Link>
           <Link
             href="/invite"
-            className="bg-slate-900 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-slate-800 transition-colors shadow-lg shadow-slate-900/20"
+            className="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25 hover:scale-105 active:scale-95"
           >
             Invite Bot
           </Link>
         </div>
 
-        {/* Mobile Toggle */}
+        {/* Mobile Toggle Button */}
         <button
-          className="md:hidden text-slate-600"
+          className="md:hidden text-slate-300 hover:text-white transition-colors p-1"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <X /> : <Menu />}
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="absolute top-20 left-4 right-4 glass rounded-2xl p-4 flex flex-col gap-4 md:hidden shadow-xl bg-white/90 backdrop-blur-md">
-          <Link
-            href="#features"
-            className="text-slate-600 py-2 hover:text-indigo-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Fitur
-          </Link>
-          <Link
-            href="#commands"
-            className="text-slate-600 py-2 hover:text-indigo-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Commands
-          </Link>
-          <Link
-            href="#contact"
-            className="text-slate-600 py-2 hover:text-indigo-600"
-            onClick={() => setIsOpen(false)}
-          >
-            Contact
-          </Link>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="absolute top-20 left-4 right-4 rounded-2xl p-4 flex flex-col gap-2 md:hidden shadow-2xl bg-[#0f172a]/95 backdrop-blur-xl border border-white/10"
+        >
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="text-slate-300 py-3 px-4 hover:text-white hover:bg-white/5 rounded-xl transition-all font-medium"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.name}
+            </Link>
+          ))}
+
+          <div className="h-px bg-white/10 my-2" />
+
           <Link
             href="/login"
-            className="text-slate-600 py-2 hover:text-indigo-600"
+            className="text-slate-300 py-3 px-4 hover:text-white hover:bg-white/5 rounded-xl transition-all font-medium"
             onClick={() => setIsOpen(false)}
           >
             Login
           </Link>
           <Link
             href="/invite"
-            className="bg-indigo-600 text-white text-center py-3 rounded-xl font-medium"
+            className="bg-indigo-600 text-white text-center py-3 rounded-xl font-bold hover:bg-indigo-500 transition-colors shadow-lg shadow-indigo-500/20 mt-2"
             onClick={() => setIsOpen(false)}
           >
             Invite Bot
           </Link>
-        </div>
+        </motion.div>
       )}
     </motion.header>
   );

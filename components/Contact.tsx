@@ -1,61 +1,72 @@
 "use client";
 
-import { Clipboard, ClipboardCheck, MessageSquare } from "lucide-react";
+import { Check, Copy, MessageSquare } from "lucide-react";
 import { useState } from "react";
 
 export default function ContactPage() {
-  const [buttonText, setButtonText] = useState("Copy Username");
-  const [buttonIcon, setButtonIcon] = useState(<Clipboard size={16} />);
-
+  const [copied, setCopied] = useState(false);
   const discordUsername = "yochiyuu";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(discordUsername);
-    setButtonText("Copied!");
-    setButtonIcon(<ClipboardCheck size={16} className="text-green-600" />);
-
-    setTimeout(() => {
-      setButtonText("Copy Username");
-      setButtonIcon(<Clipboard size={16} />);
-    }, 2000);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    // Update: Hapus background, biarkan transparan
-    <div className="w-full py-16 md:py-24 relative overflow-hidden">
-      <div className="container mx-auto max-w-4xl px-6 relative z-20">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl text-slate-900">
+    // Container utama transparan
+    <div className="w-full py-20 relative">
+      <div className="container mx-auto max-w-4xl px-6 relative z-10">
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl drop-shadow-md mb-4">
             Get in Touch
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+          <p className="mx-auto max-w-2xl text-lg text-slate-300">
             Punya pertanyaan, kritik, atau saran? Kami siap mendengarkan.
           </p>
         </div>
 
-        <div className="mt-16 flex justify-center">
-          {/* Kartu Direct Message (Transparan / Glass) */}
-          <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white/60 backdrop-blur-md p-10 text-center shadow-lg shadow-indigo-100/50">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
-              <MessageSquare className="h-8 w-8" />
+        {/* Card Area */}
+        <div className="flex justify-center">
+          {/* Glass Card Container */}
+          <div className="w-full max-w-md flex flex-col items-center rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md p-8 md:p-10 text-center shadow-2xl transition-transform hover:scale-[1.01] duration-300">
+            {/* Icon dengan Glow Effect */}
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+              <MessageSquare className="h-9 w-9" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-900">
-              Direct Message Me
+
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Direct Message
             </h2>
-            <p className="mt-2 text-base text-slate-600 max-w-md">
-              Untuk pertanyaan pribadi, kolaborasi, atau urusan bisnis.
-              Tambahkan saya di Discord.
+
+            <p className="text-slate-400 mb-8 leading-relaxed">
+              Untuk pertanyaan pribadi, kolaborasi, atau urusan bisnis. Silakan
+              hubungi saya via Discord.
             </p>
-            <div className="mt-6 w-full max-w-sm">
-              <div className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-center font-mono text-lg text-slate-800 mb-3 select-all">
-                {discordUsername}
+
+            {/* Username & Action */}
+            <div className="w-full space-y-4">
+              {/* Username Box */}
+              <div className="group relative w-full overflow-hidden rounded-xl border border-white/10 bg-black/50 p-4 text-center">
+                <p className="font-mono text-xl font-medium text-white tracking-wider select-all">
+                  {discordUsername}
+                </p>
+                {/* Efek kilau halus saat hover */}
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
+
+              {/* Copy Button */}
               <button
                 onClick={handleCopy}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-4 py-3 text-sm font-semibold transition-all shadow-md hover:shadow-lg"
+                className={`flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold transition-all duration-300 shadow-lg ${
+                  copied
+                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
+                    : "bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-500 hover:shadow-indigo-500/25 hover:-translate-y-0.5"
+                }`}
               >
-                {buttonIcon}
-                {buttonText}
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+                {copied ? "Berhasil Disalin!" : "Salin Username"}
               </button>
             </div>
           </div>
